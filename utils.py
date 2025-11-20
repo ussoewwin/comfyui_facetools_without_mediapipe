@@ -3,7 +3,7 @@ import torch
 import torchvision as tv
 import numpy as np
 import cv2
-import mediapipe as mp
+# mediapipe removed - replaced with InsightFace
 from scipy.spatial import ConvexHull
 from folder_paths import models_dir
 from ultralytics import YOLO
@@ -59,24 +59,24 @@ class Models:
             cls._yolo = cls._yolo.to(device)
             print(f"[YOLO] Model loaded to device: {device}")
 
-        # 推理时打印图像和当前模型 device（用于验证）
+        # Print image and current model device during inference (for verification)
         print(f"[YOLO] Predicting on device: {cls._yolo.device}")
         dets = cls._yolo(img, conf=threshold)[0]
         return dets
 
     @classmethod
     def gender(cls, original_img):
-        """使用 InsightFace 在原始图像上检测所有人脸的性别，返回带下标的性别信息"""
+        """Use InsightFace to detect gender of all faces in the original image, returns gender information with indices"""
         print(f"[Gender] Starting InsightFace gender detection on original image...")
 
         try:
             from insightface.app import FaceAnalysis
 
-            # ✅ 自动选择 GPU / CPU
+            # ✅ Automatically select GPU / CPU
             providers = ['CUDAExecutionProvider'] if torch.cuda.is_available() else [
                 'CPUExecutionProvider']
 
-            # ✅ 初始化（缓存）
+            # ✅ Initialize (cached)
             if not hasattr(cls, "_insight_app"):
                 cls._insight_app = FaceAnalysis(providers=providers)
                 cls._insight_app.prepare(ctx_id=0, det_size=(640, 640))
@@ -85,7 +85,7 @@ class Models:
 
             app = cls._insight_app
 
-            # 转换原始图像
+            # Convert original image
             if isinstance(original_img, torch.Tensor):
                 img_np = original_img.detach().cpu().numpy()
                 if img_np.ndim == 4:  # [B, H, W, C]
@@ -101,14 +101,14 @@ class Models:
 
             print(f"[Gender] Original image shape: {img_np.shape}")
 
-            # 在完整图像中检测人脸
+            # Detect faces in the full image
             faces = app.get(img_np)
             print(f"[Gender] Found {len(faces)} faces in original image")
 
-            # 按 x 坐标排序（从左到右）
+            # Sort by x coordinate (left to right)
             faces.sort(key=lambda f: f.bbox[0])
 
-            # 提取所有带下标的性别信息
+            # Extract all gender information with indices
             gender_results = []
             for i, face in enumerate(faces):
                 fx1, fy1, fx2, fy2 = face.bbox.astype(int)
@@ -126,7 +126,7 @@ class Models:
 
         except ImportError:
             print("[Gender] InsightFace not installed, using fallback method")
-            # 简单的启发式方法
+            # Simple heuristic method
             return [{'index': 0, 'gender': 'man', 'bbox': (0, 0, 100, 100), 'age': 30, 'score': 0.5}]
 
         except Exception as e:
@@ -191,12 +191,12 @@ class Face:
         rot = cv2.getRotationMatrix2D((128*s,128*s), 90*i, 1)
         self.R = np.vstack((rot, np.array((0,0,1))))
 
-        # 只在需要时进行性别检测
+        # Only perform gender detection when needed
         if detect_gender:
             print(f"[Face] Starting gender detection for face bbox: ({a}, {b}, {c}, {d})")
             print(f"[Face] Crop shape: {crop.shape}")
-            # 注意：现在 gender 函数需要原始图像，但这里我们暂时设置为 unknown
-            # 实际的性别检测会在 DetectFaceByIndex 节点中进行
+            # Note: The gender function now requires the original image, but we temporarily set it to unknown here
+            # Actual gender detection will be performed in the DetectFaceByIndex node
             self.gender = "unknown"
             print(f"[Face] Gender will be assigned later in DetectFaceByIndex")
         else:
@@ -238,16 +238,9 @@ def detect_faces(img, threshold, detect_gender=False):
     return faces
 
 def get_face_mesh(crop: torch.Tensor):
-    with mp.solutions.face_mesh.FaceMesh(max_num_faces=10) as face_mesh:
-        mesh = face_mesh.process(crop.mul(255).type(torch.uint8)[0].numpy())
-    _, h, w, _ = crop.shape
-    if mesh.multi_face_landmarks is not None:
-        all_pts = np.array([np.array([(w*l.x, h*l.y) for l in lmks.landmark]) for lmks in mesh.multi_face_landmarks], dtype=np.int32)
-        idx = np.argmin(np.abs(all_pts - np.array([w/2,h/2])).sum(axis=(1,2)))
-        points = all_pts[idx]
-        return points
-    else:
-        return None
+    # mediapipe removed - this function now returns None to use fallback
+    # The mask_convex_hull function will fall back to mask_simple_square
+    return None
 
 def mask_simple_square(face, M, crop):
     # rotated bbox and size

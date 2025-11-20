@@ -48,7 +48,7 @@ class DetectFaces:
                     face.img = image[i]
                     faces.append(face)
 
-        # 只返回面积最大的人脸，如果没有人脸则返回空列表
+        # Return only the face with the largest area, or empty list if no faces found
 
         if faces:
             largest_face = max(faces, key=lambda f: abs(f.bbox[2] - f.bbox[0]) * abs(f.bbox[3] - f.bbox[1]))
@@ -66,12 +66,12 @@ class DetectFaceByIndex:
         return {
             'required': {
                 'image': ('IMAGE',),
-                'threshold': ('FLOAT', {'default': 0.5, 'min': 0.0, 'max': 1.0, 'step': 0.01, 'tooltip': '人脸检测置信度阈值，越高越严格'}),
-                'min_size': ('INT', {'default': 64, 'max': 512, 'step': 8, 'tooltip': '最小人脸尺寸，过滤掉太小的检测结果'}),
-                'max_size': ('INT', {'default': 512, 'min': 512, 'step': 8, 'tooltip': '最大人脸尺寸，过滤掉太大的检测结果'}),
-                'face_index': ('INT', {'default': 0, 'min': 0, 'max': 10, 'step': 1, 'tooltip': '人脸索引：0=最左边第一个，1=第二个，以此类推'}),
-                'gender_filter': ('INT', {'default': 0, 'min': 0, 'max': 2, 'step': 1, 'tooltip': '性别筛选：0=任意性别，1=只检测男性(man)，2=只检测女性(woman)'}),
-                'priority_mode': ('INT', {'default': 0, 'min': 0, 'max': 1, 'step': 1, 'tooltip': '优先级模式：0=下标优先（先选位置再检查性别），1=性别优先（先筛选性别再选位置）'}),
+                'threshold': ('FLOAT', {'default': 0.5, 'min': 0.0, 'max': 1.0, 'step': 0.01, 'tooltip': 'Face detection confidence threshold, higher values are more strict'}),
+                'min_size': ('INT', {'default': 64, 'max': 512, 'step': 8, 'tooltip': 'Minimum face size, filters out detection results that are too small'}),
+                'max_size': ('INT', {'default': 512, 'min': 512, 'step': 8, 'tooltip': 'Maximum face size, filters out detection results that are too large'}),
+                'face_index': ('INT', {'default': 0, 'min': 0, 'max': 10, 'step': 1, 'tooltip': 'Face index: 0=leftmost first, 1=second, and so on'}),
+                'gender_filter': ('INT', {'default': 0, 'min': 0, 'max': 2, 'step': 1, 'tooltip': 'Gender filter: 0=any gender, 1=detect male only, 2=detect female only'}),
+                'priority_mode': ('INT', {'default': 0, 'min': 0, 'max': 1, 'step': 1, 'tooltip': 'Priority mode: 0=index priority (select position first then check gender), 1=gender priority (filter gender first then select position)'}),
             },
             'optional': {
                 'mask': ('MASK',),
@@ -90,9 +90,9 @@ class DetectFaceByIndex:
             masked = image * tv.transforms.functional.resize(1-mask, image.shape[1:3])[..., None]
         masked = (masked * 255).type(torch.uint8)
 
-        # 先进行 YOLO 人脸检测
+        # First perform YOLO face detection
         for i, img in enumerate(masked):
-            unfiltered_faces = detect_faces(img, threshold, detect_gender=False)  # 不检测性别
+            unfiltered_faces = detect_faces(img, threshold, detect_gender=False)  # Don't detect gender
             for face in unfiltered_faces:
                 a, b, c, d = face.bbox
                 h = abs(d-b)
@@ -104,79 +104,79 @@ class DetectFaceByIndex:
 
         print(f"[DetectFaceByIndex] YOLO detected {len(faces)} faces")
 
-        # 直接调用 Models.gender 进行性别检测
-        insightface_genders = Models.gender(image[0])  # 在原始图像上检测性别
+        # Directly call Models.gender for gender detection
+        insightface_genders = Models.gender(image[0])  # Detect gender on original image
         print(f"[DetectFaceByIndex] InsightFace detected {len(insightface_genders)} faces with genders")
 
-        # 判断人头数量和性别数量是否一致
+        # Check if face count and gender count match
         if len(faces) != len(insightface_genders):
             print(f"[DetectFaceByIndex] Warning: Face count mismatch! YOLO={len(faces)}, InsightFace={len(insightface_genders)}")
-            # 如果数量不一致，使用启发式方法
+            # If counts don't match, use heuristic method
             faces.sort(key=lambda f: f.bbox[0])
             for i, face in enumerate(faces):
-                face.gender = "man" if i == 0 else "woman"  # 左边男性，右边女性
+                face.gender = "man" if i == 0 else "woman"  # Left is male, right is female
                 print(f"[DetectFaceByIndex] Face {i}: Using heuristic gender={face.gender}")
         else:
-            # 数量一致，按顺序分配性别
-            faces.sort(key=lambda f: f.bbox[0])  # 按 x 坐标排序
+            # Counts match, assign genders in order
+            faces.sort(key=lambda f: f.bbox[0])  # Sort by x coordinate
             for i, face in enumerate(faces):
                 face.gender = insightface_genders[i]['gender']
                 print(f"[DetectFaceByIndex] Face {i}: YOLO bbox={face.bbox}, assigned gender={face.gender}")
 
-        # 先按 x 坐标排序（从左到右）
+        # Sort by x coordinate first (left to right)
         faces.sort(key=lambda f: f.bbox[0])
 
-        # 打印所有人脸的性别信息
-        print(f"[DetectFaceByIndex] Priority mode: {priority_mode} ({'下标优先' if priority_mode == 0 else '性别优先'})")
+        # Print gender information for all faces
+        print(f"[DetectFaceByIndex] Priority mode: {priority_mode} ({'index priority' if priority_mode == 0 else 'gender priority'})")
         print(f"[DetectFaceByIndex] Gender filter: {gender_filter}")
         print(f"[DetectFaceByIndex] Face index: {face_index}")
         print(f"[DetectFaceByIndex] Total faces before filtering: {len(faces)}")
         for i, face in enumerate(faces):
             print(f"[DetectFaceByIndex] Face {i}: bbox={face.bbox}, gender={face.gender}")
 
-        if priority_mode == 0:  # 下标优先：先选位置再检查性别
+        if priority_mode == 0:  # Index priority: select position first then check gender
             print(f"[DetectFaceByIndex] Using index priority mode")
             if faces and face_index < len(faces):
                 selected_face = faces[face_index]
                 print(f"[DetectFaceByIndex] Selected face {face_index}: bbox={selected_face.bbox}, gender={selected_face.gender}")
 
-                # 检查性别是否符合要求
-                if gender_filter == 1:  # 必须是男性
+                # Check if gender matches requirement
+                if gender_filter == 1:  # Must be male
                     if selected_face.gender == "man":
                         faces = [selected_face]
                         print(f"[DetectFaceByIndex] Face {face_index} is male, keeping it")
                     else:
                         faces = []
                         print(f"[DetectFaceByIndex] Face {face_index} is not male, returning empty")
-                elif gender_filter == 2:  # 必须是女性
+                elif gender_filter == 2:  # Must be female
                     if selected_face.gender == "woman":
                         faces = [selected_face]
                         print(f"[DetectFaceByIndex] Face {face_index} is female, keeping it")
                     else:
                         faces = []
                         print(f"[DetectFaceByIndex] Face {face_index} is not female, returning empty")
-                else:  # gender_filter == 0，不检查性别
+                else:  # gender_filter == 0, no gender check
                     faces = [selected_face]
                     print(f"[DetectFaceByIndex] No gender filter, keeping face {face_index}")
             else:
-                faces = []  # 下标超出范围，返回空列表
+                faces = []  # Index out of range, return empty list
                 print(f"[DetectFaceByIndex] Face index {face_index} out of range, returning empty")
 
-        else:  # 性别优先：先筛选性别再选位置
+        else:  # Gender priority: filter gender first then select position
             print(f"[DetectFaceByIndex] Using gender priority mode")
 
-            # 先根据性别筛选
-            if gender_filter == 1:  # 只选择男性
+            # First filter by gender
+            if gender_filter == 1:  # Select males only
                 filtered_faces = [face for face in faces if face.gender == "man"]
                 print(f"[DetectFaceByIndex] After filtering for men: {len(filtered_faces)} faces")
-            elif gender_filter == 2:  # 只选择女性
+            elif gender_filter == 2:  # Select females only
                 filtered_faces = [face for face in faces if face.gender == "woman"]
                 print(f"[DetectFaceByIndex] After filtering for women: {len(filtered_faces)} faces")
-            else:  # gender_filter == 0，不筛选性别
+            else:  # gender_filter == 0, no gender filtering
                 filtered_faces = faces
                 print(f"[DetectFaceByIndex] No gender filtering, keeping all faces")
 
-            # 再根据 face_index 选择
+            # Then select by face_index
             if filtered_faces and face_index < len(filtered_faces):
                 selected_face = filtered_faces[face_index]
                 faces = [selected_face]
@@ -251,11 +251,11 @@ class WarpFaceBack:
         }
 
     def run(self, images, face, crop, mask, warp, has_face=True):
-        # 如果has_face为False，直接返回原图像
+        # If has_face is False, return original image directly
         if not has_face:
             return (images,)
 
-        # 处理单个人脸
+        # Process single face
         if len(face) == 0:
             return (images,)
 
@@ -307,9 +307,9 @@ class VAEDecodeNew:
     DESCRIPTION = "Decodes latent images back into pixel space images."
 
     def decode(self, vae, samples, has_face=True):
-        # 如果has_face为False，返回空白画布，节省VAE解码时间
+        # If has_face is False, return blank canvas to save VAE decode time
         if not has_face:
-            # 创建512x512的黑色空白画布
+            # Create 512x512 black blank canvas
             blank_canvas = torch.zeros((1, 512, 512, 3), dtype=torch.float32)
             return (blank_canvas,)
         images = vae.decode(samples["samples"])
@@ -333,9 +333,9 @@ class VAEEncodeNew:
     CATEGORY = "sunxAI_facetools"
 
     def encode(self, vae, pixels, has_face=True):
-        # 如果has_face为False，返回空白latent，节省VAE编码时间
+        # If has_face is False, return blank latent to save VAE encode time
         if not has_face:
-            # 创建512x512对应的空白latent (512//8 = 64)
+            # Create blank latent corresponding to 512x512 (512//8 = 64)
             blank_latent = torch.zeros([1, 4, 64, 64])
             return ({"samples": blank_latent},)
 
@@ -474,7 +474,7 @@ class SaveImageWebsocket:
                         "min": 60,
                         "max": 100,
                         "step": 1,
-                        "tooltip": "JPEG压缩质量（60=低质量，100=高质量）"
+                        "tooltip": "JPEG compression quality (60=low quality, 100=high quality)"
                     },
                 ),
             }
@@ -493,13 +493,13 @@ class SaveImageWebsocket:
                 i = 255. * image.cpu().numpy()
                 img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
 
-                # 直接在内存中进行JPEG压缩
+                # Perform JPEG compression directly in memory
                 buffer = BytesIO()
                 img.save(buffer, format="JPEG", quality=jpeg_quality)
                 buffer.seek(0)
                 jpg_img = Image.open(buffer).convert("RGB").copy()
 
-                # 发送JPEG格式图像
+                # Send JPEG format image
                 pbar.update_absolute(idx, images.shape[0], ("JPEG", jpg_img, None))
 
             except Exception as e:

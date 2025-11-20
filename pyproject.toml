@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "comfyui_sunxAI_facetools"
-version = "0.2.7"  # 每次发布务必递增
+version = "0.2.7"  # Must increment on each release
 description = "Face detection & restoration tools for ComfyUI by Sunx.ai"
 authors = [
   { name = "Sunx.ai", email = "sunx.ai@hotmail.com" }
 ]
 readme = "README.md"
-# 使用 SPDX 标准写法，避免 JSON 字符串
+# Use SPDX standard format, avoid JSON string
 license = { text = "GPL-3.0-only" }
 requires-python = ">=3.10"
 dependencies = [
@@ -30,12 +30,12 @@ dev = [
 ]
 
 [project.urls]
-Repository = "https://github.com/upseem/comfyui_sunxAI_facetools"  # ← 关键字段：解决 repository is required
+Repository = "https://github.com/upseem/comfyui_sunxAI_facetools"  # ← Key field: resolves repository is required
 Homepage = "https://github.com/upseem/comfyui_sunxAI_facetools"
 Bugs = "https://github.com/upseem/comfyui_sunxAI_facetools/issues"
 
 [tool.comfy]
-# 必须与 Registry 上创建的 Publisher 一致（@ 后面的那段）
+# Must match the Publisher created on Registry (the part after @)
 PublisherId = "sunxai"
 DisplayName = "comfyui_sunxAI_facetools"
 Icon = "https://avatars.githubusercontent.com/u/124853686"
