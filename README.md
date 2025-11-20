@@ -14,31 +14,31 @@ Face detection & restoration tools for ComfyUI by Sunx.ai
 
 # Features
 
-- **DetectFaces**: 检测图像中的人脸，返回面积最大的人脸
-- **DetectFaceByIndex**: 根据索引检测人脸，支持从左到右选择特定人脸（0=最左边，1=第二个，以此类推），支持性别筛选（0=任意性别，1=男性，2=女性）。性别检测只在需要时启用，提高性能。
-- **DetectFaceByGender**: 根据性别和索引检测人脸，支持筛选男性/女性人脸，并按从左到右顺序选择
-- **CropFaces**: 裁剪检测到的人脸区域
-- **WarpFaceBack**: 将处理后的脸贴回原图
-- **InstantID**: 人脸身份保持功能
-- **ColorAdjust**: 人脸颜色调整
-- **SaveImageWebsocket**: 通过 WebSocket 保存图像
+- **DetectFaces**: Detects faces in images and returns the face with the largest area
+- **DetectFaceByIndex**: Detects faces by index, supporting left-to-right selection of specific faces (0=leftmost, 1=second, etc.), with gender filtering support (0=any gender, 1=male, 2=female). Gender detection is only enabled when needed for improved performance.
+- **DetectFaceByGender**: Detects faces by gender and index, supporting filtering of male/female faces and selection in left-to-right order
+- **CropFaces**: Crops detected face regions
+- **WarpFaceBack**: Warps processed faces back to the original image
+- **InstantID**: Face identity preservation functionality
+- **ColorAdjust**: Face color adjustment
+- **SaveImageWebsocket**: Saves images via WebSocket
 
-## 安装依赖
+## Installation Dependencies
 
-本插件使用 InsightFace 进行高精度性别检测，首次使用时会自动下载模型：
+This extension uses InsightFace for high-precision gender detection. Models will be automatically downloaded on first use:
 
 ```bash
 pip install insightface
 ```
 
-**注意**: InsightFace 需要额外的模型文件，首次运行时会自动下载。
+**Note**: InsightFace requires additional model files that will be automatically downloaded on first run.
 
-### 性别检测特性
-- 使用 InsightFace 进行高精度性别识别
-- 支持 GPU 和 CPU 模式，自动选择最佳设备
-- 提供年龄检测和置信度信息
-- 支持 fallback 方案（基于面部宽高比）
-- 防止除零错误，确保稳定运行
+### Gender Detection Features
+- Uses InsightFace for high-precision gender recognition
+- Supports both GPU and CPU modes with automatic device selection
+- Provides age detection and confidence information
+- Supports fallback mechanism (based on facial aspect ratio)
+- Prevents division by zero errors to ensure stable operation
 
 ## Develop
 
