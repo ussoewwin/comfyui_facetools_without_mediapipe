@@ -11,6 +11,9 @@ This extension was created to address the compatibility issue with MediaPipe in 
 - Consolidate and manage face detection/processing nodes in a single extension
 - Maintain functionality while ensuring compatibility with modern Python versions
 
+> [!WARNING]
+> **Important Limitation**: InsightFace does not provide the same level of detailed detection as MediaPipe. Some features may be limited compared to the original MediaPipe-based implementations. The original functionality may be restricted or simplified in some cases.
+
 > [!NOTE]
 > This projected was created with a [cookiecutter](https://github.com/Comfy-Org/cookiecutter-comfy-extension) template. It helps you start writing custom nodes without worrying about the Python setup.
 
@@ -50,6 +53,9 @@ This extension was created to address the compatibility issue with MediaPipe in 
 
 > [!NOTE]
 > These segmentation nodes were adapted from original implementations in `comfyui-easy-use` and `ComfyUI_LayerStyle_Advance`, with MediaPipe replaced by InsightFace for Python 3.13 compatibility.
+
+> [!WARNING]
+> **Detection Accuracy Limitation**: InsightFace cannot achieve the same level of detailed detection as MediaPipe. Some segmentation features may be less precise or have reduced functionality compared to the original MediaPipe-based implementations. The original functionality may be restricted in some cases.
 
 - **Facetools Human Segmentation (InsightFace)**: Human segmentation using InsightFace face detection. Adapted from `comfyui-easy-use`'s `humanSegmentation` node. Detects faces and generates segmentation masks with configurable confidence threshold. Returns RGBA image with mask and separate mask output.
   - **Original Repository**: [comfyui-easy-use](https://github.com/yolain/comfyui-easy-use) (Please check the original repository for license information)
