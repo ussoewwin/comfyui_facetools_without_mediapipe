@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-"""Tests for `comfyui_sunxAI_facetools` package."""
+"""Tests for `comfyui_facetools_disabled_mediapipe` package."""
 
 import pytest
-from src.comfyui_sunxAI_facetools.nodes import Example
+from src.comfyui_facetools_disabled_mediapipe.nodes import Example
 
 @pytest.fixture
 def example_node():

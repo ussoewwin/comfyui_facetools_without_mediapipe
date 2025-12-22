@@ -1,1 +1,1 @@
-"""Unit test package for comfyui_sunxAI_facetools."""
+"""Unit test package for comfyui_facetools_disabled_mediapipe."""

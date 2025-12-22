@@ -29,7 +29,7 @@ class DetectFaces:
     RETURN_TYPES = ('FACE', 'BOOLEAN')
     RETURN_NAMES = ('faces', 'has_face')
     FUNCTION = 'run'
-    CATEGORY = 'sunxAI_facetools'
+    CATEGORY = 'facetools_disabled_mediapipe'
 
     def run(self, image, threshold, min_size, max_size, mask=None):
         faces = []
@@ -81,7 +81,7 @@ class DetectFaceByIndex:
     RETURN_TYPES = ('FACE', 'BOOLEAN')
     RETURN_NAMES = ('faces', 'has_face')
     FUNCTION = 'run'
-    CATEGORY = 'sunxAI_facetools'
+    CATEGORY = 'facetools_disabled_mediapipe'
 
     def run(self, image, threshold, min_size, max_size, face_index, gender_filter, priority_mode, mask=None):
         faces = []
@@ -205,7 +205,7 @@ class CropFaces:
     RETURN_TYPES = ('IMAGE', 'MASK', 'WARP')
     RETURN_NAMES = ('crops', 'masks', 'warps')
     FUNCTION = 'run'
-    CATEGORY = 'sunxAI_facetools'
+    CATEGORY = 'facetools_disabled_mediapipe'
 
     def run(self, faces, crop_size, crop_factor, mask_type):
         if len(faces) == 0:
@@ -233,7 +233,7 @@ class CropFaces:
 class WarpFaceBack:
     RETURN_TYPES = ('IMAGE',)
     FUNCTION = 'run'
-    CATEGORY = 'sunxAI_facetools'
+    CATEGORY = 'facetools_disabled_mediapipe'
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -303,7 +303,7 @@ class VAEDecodeNew:
     OUTPUT_TOOLTIPS = ("The decoded image.",)
     FUNCTION = "decode"
 
-    CATEGORY = "sunxAI_facetools"
+    CATEGORY = "facetools_disabled_mediapipe"
     DESCRIPTION = "Decodes latent images back into pixel space images."
 
     def decode(self, vae, samples, has_face=True):
@@ -330,7 +330,7 @@ class VAEEncodeNew:
     RETURN_TYPES = ("LATENT",)
     FUNCTION = "encode"
 
-    CATEGORY = "sunxAI_facetools"
+    CATEGORY = "facetools_disabled_mediapipe"
 
     def encode(self, vae, pixels, has_face=True):
         # If has_face is False, return blank latent to save VAE encode time
@@ -356,7 +356,7 @@ class SelectFloatByBool:
     RETURN_TYPES = ("FLOAT",)
     RETURN_NAMES = ("value",)
     FUNCTION = "run"
-    CATEGORY = "sunxAI_facetools"
+    CATEGORY = "facetools_disabled_mediapipe"
 
     def run(self, cond, true_value, false_value):
         return (true_value if cond else false_value,)
@@ -425,7 +425,7 @@ class ColorAdjust:
 
     #OUTPUT_NODE = False
 
-    CATEGORY = "sunxAI_facetools"
+    CATEGORY = "facetools_disabled_mediapipe"
 
     def main(self,
              image: Tensor,
@@ -483,7 +483,7 @@ class SaveImageWebsocket:
     RETURN_TYPES = ()
     FUNCTION = "save_images"
     OUTPUT_NODE = True
-    CATEGORY = "sunxAI_facetools"
+    CATEGORY = "facetools_disabled_mediapipe"
 
     def save_images(self, images, jpeg_quality):
         pbar = comfy.utils.ProgressBar(images.shape[0])

@@ -3,7 +3,7 @@ requires = ["setuptools>=70.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "comfyui_sunxAI_facetools"
+name = "comfyui_facetools_disabled_mediapipe"
 version = "0.2.7"  # Must increment on each release
 description = "Face detection & restoration tools for ComfyUI by Sunx.ai"
 authors = [
@@ -30,14 +30,14 @@ dev = [
 ]
 
 [project.urls]
-Repository = "https://github.com/upseem/comfyui_sunxAI_facetools"  # ← Key field: resolves repository is required
-Homepage = "https://github.com/upseem/comfyui_sunxAI_facetools"
-Bugs = "https://github.com/upseem/comfyui_sunxAI_facetools/issues"
+Repository = "https://github.com/upseem/comfyui_facetools_disabled_mediapipe"  # ← Key field: resolves repository is required
+Homepage = "https://github.com/upseem/comfyui_facetools_disabled_mediapipe"
+Bugs = "https://github.com/upseem/comfyui_facetools_disabled_mediapipe/issues"
 
 [tool.comfy]
 # Must match the Publisher created on Registry (the part after @)
 PublisherId = "sunxai"
-DisplayName = "comfyui_sunxAI_facetools"
+DisplayName = "comfyui_facetools_disabled_mediapipe"
 Icon = "https://avatars.githubusercontent.com/u/124853686"
 
 [tool.setuptools.package-data]

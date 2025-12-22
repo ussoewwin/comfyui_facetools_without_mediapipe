@@ -1,4 +1,4 @@
-# comfyui_sunxAI_facetools
+# comfyui_facetools_disabled_mediapipe
 
 Face detection & restoration tools for ComfyUI by Sunx.ai
 
@@ -13,11 +13,11 @@ Face detection & restoration tools for ComfyUI by Sunx.ai
 2. Clone this repository into your `ComfyUI/custom_nodes` directory:
    ```bash
    cd ComfyUI/custom_nodes
-   git clone https://github.com/ussoewwin/comfyui_sunxAI_facetools_disabled_mediapipe.git
+   git clone https://github.com/ussoewwin/comfyui_facetools_disabled_mediapipe.git
    ```
 3. Install dependencies from `requirements.txt`:
    ```bash
-   cd comfyui_sunxAI_facetools_disabled_mediapipe
+   cd comfyui_facetools_disabled_mediapipe
    pip install -r requirements.txt
    ```
    **Important**: For Python 3.13 Windows users, see the [Installation Dependencies](#installation-dependencies) section below for special instructions.
@@ -72,7 +72,7 @@ pip install insightface-0.7.3-cp313-cp313-win_amd64.whl
 To install the dev dependencies and pre-commit (will run the ruff hook), do:
 
 ```bash
-cd comfyui_sunxAI_facetools
+cd comfyui_facetools_disabled_mediapipe
 pip install -e .[dev]
 pre-commit install
 ```
@@ -93,7 +93,7 @@ git push
 
 ## Writing custom nodes
 
-An example custom node is located in [node.py](src/comfyui_sunxAI_facetools/nodes.py). To learn more, read the [docs](https://docs.comfy.org/essentials/custom_node_overview).
+An example custom node is located in [node.py](src/comfyui_facetools_disabled_mediapipe/nodes.py). To learn more, read the [docs](https://docs.comfy.org/essentials/custom_node_overview).
 
 
 ## Tests
