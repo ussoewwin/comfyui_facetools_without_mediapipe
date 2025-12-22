@@ -60,9 +60,6 @@ This extension was created to address the compatibility issue with MediaPipe in 
 > [!NOTE]
 > The segmentation nodes (facetools_humanSegmentation, facetools_PersonMaskUltraV2, facetools_FacialSegment) were adapted from original implementations in `comfyui-easy-use` and `ComfyUI_LayerStyle_Advance`, with MediaPipe replaced by InsightFace for Python 3.13 compatibility.
 
-> [!WARNING]
-> **Detection Accuracy Limitation**: InsightFace cannot achieve the same level of detailed detection as MediaPipe. Some segmentation features may be less precise or have reduced functionality compared to the original MediaPipe-based implementations. The original functionality may be restricted in some cases.
-
 ## Installation Dependencies
 
 This extension uses InsightFace for high-precision gender detection (replacing mediapipe for Python 3.13 compatibility). Models will be automatically downloaded on first use:
