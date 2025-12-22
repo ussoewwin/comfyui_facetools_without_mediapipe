@@ -2,6 +2,15 @@
 
 Face detection & restoration tools for ComfyUI by Sunx.ai
 
+## Project Purpose
+
+This extension was created to address the compatibility issue with MediaPipe in Python 3.13 and later versions. While there are many facetools extensions for ComfyUI that use MediaPipe, MediaPipe is no longer compatible with Python 3.13+. This project replaces MediaPipe with InsightFace and provides a unified management solution for face detection and processing tools.
+
+**Key Objectives:**
+- Replace MediaPipe-based implementations with InsightFace for Python 3.13+ compatibility
+- Consolidate and manage face detection/processing nodes in a single extension
+- Maintain functionality while ensuring compatibility with modern Python versions
+
 > [!NOTE]
 > This projected was created with a [cookiecutter](https://github.com/Comfy-Org/cookiecutter-comfy-extension) template. It helps you start writing custom nodes without worrying about the Python setup.
 
@@ -36,9 +45,16 @@ Face detection & restoration tools for ComfyUI by Sunx.ai
 - **SaveImageWebsocket**: Saves images via WebSocket
 
 ## Segmentation (InsightFace-based)
-- **Facetools Human Segmentation (InsightFace)**: Human segmentation using InsightFace face detection. Detects faces and generates segmentation masks with configurable confidence threshold. Returns RGBA image with mask and separate mask output.
-- **Facetools Person Mask Ultra V2 (InsightFace)**: Advanced person mask generation with detailed component selection (face, hair, body, clothes, accessories, background). Supports multiple detail processing methods (VITMatte, PyMatting, GuidedFilter) with configurable erode/dilate operations, black/white point adjustment, and device selection (CUDA/CPU).
-- **Facetools Facial Segment (InsightFace)**: Facial feature segmentation for individual components. Supports selective segmentation of left/right eyes, eyebrows, lips, and teeth. Uses InsightFace keypoints for precise feature detection and generates masks with Gaussian blur for smooth edges.
+
+> [!NOTE]
+> These segmentation nodes were adapted from original implementations in `comfyui-easy-use` and `ComfyUI_LayerStyle_Advance`, with MediaPipe replaced by InsightFace for Python 3.13 compatibility. For detailed information about the MediaPipe to InsightFace replacement modification, see [this article](https://note.com/198619891990/n/n31cc354fb55a).
+
+- **Facetools Human Segmentation (InsightFace)**: Human segmentation using InsightFace face detection. Adapted from `comfyui-easy-use`'s `humanSegmentation` node. Detects faces and generates segmentation masks with configurable confidence threshold. Returns RGBA image with mask and separate mask output.
+  - **Original Repository**: [comfyui-easy-use](https://github.com/yolain/comfyui-easy-use) (Please check the original repository for license information)
+- **Facetools Person Mask Ultra V2 (InsightFace)**: Advanced person mask generation with detailed component selection (face, hair, body, clothes, accessories, background). Adapted from `ComfyUI_LayerStyle_Advance`'s `PersonMaskUltraV2` node. Supports multiple detail processing methods (VITMatte, PyMatting, GuidedFilter) with configurable erode/dilate operations, black/white point adjustment, and device selection (CUDA/CPU).
+  - **Original Repository**: [ComfyUI_LayerStyle_Advance](https://github.com/chflame163/ComfyUI_LayerStyle_Advance) (Please check the original repository for license information)
+- **Facetools Facial Segment (InsightFace)**: Facial feature segmentation for individual components. Adapted from `ComfyUI_LayerStyle_Advance`'s `MediapipeFacialSegment` node. Supports selective segmentation of left/right eyes, eyebrows, lips, and teeth. Uses InsightFace keypoints for precise feature detection and generates masks with Gaussian blur for smooth edges.
+  - **Original Repository**: [ComfyUI_LayerStyle_Advance](https://github.com/chflame163/ComfyUI_LayerStyle_Advance) (Please check the original repository for license information)
 
 ## Installation Dependencies
 
@@ -108,4 +124,18 @@ This repo contains unit tests written in Pytest in the `tests/` directory. It is
 
 - [build-pipeline.yml](.github/workflows/build-pipeline.yml) will run pytest and linter on any open PRs
 - [validate.yml](.github/workflows/validate.yml) will run [node-diff](https://github.com/Comfy-Org/node-diff) to check for breaking changes
+
+## License
+
+This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**. See [LICENSE](LICENSE) file for details.
+
+### Third-Party Components
+
+The following components are adapted from other repositories and may have different licenses:
+
+- **Facetools Human Segmentation (InsightFace)**: Adapted from [comfyui-easy-use](https://github.com/yolain/comfyui-easy-use). Please refer to the original repository for its license information.
+- **Facetools Person Mask Ultra V2 (InsightFace)**: Adapted from [ComfyUI_LayerStyle_Advance](https://github.com/chflame163/ComfyUI_LayerStyle_Advance). Please refer to the original repository for its license information.
+- **Facetools Facial Segment (InsightFace)**: Adapted from [ComfyUI_LayerStyle_Advance](https://github.com/chflame163/ComfyUI_LayerStyle_Advance). Please refer to the original repository for its license information.
+
+**Important**: When using these adapted components, you must comply with both this project's GPL-3.0 license and the licenses of the original repositories from which these components were adapted.
 

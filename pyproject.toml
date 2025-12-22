@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "comfyui_facetools_disabled_mediapipe"
 version = "0.2.7"  # Must increment on each release
-description = "Face detection & restoration tools for ComfyUI by Sunx.ai"
+description = "Face detection & restoration tools for ComfyUI by Sunx.ai. Replaces MediaPipe with InsightFace for Python 3.13+ compatibility and provides unified management of face detection/processing nodes."
 authors = [
   { name = "Sunx.ai", email = "sunx.ai@hotmail.com" }
 ]
