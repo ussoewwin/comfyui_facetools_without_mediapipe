@@ -1,8 +1,14 @@
 from .nodes import *
 from .InstantID import *
 
-
-
+try:
+    from .src.comfyui_facetools_disabled_mediapipe.insightface_segmentation import (
+        NODE_CLASS_MAPPINGS as INSIGHTFACE_NODE_CLASS_MAPPINGS,
+        NODE_DISPLAY_NAME_MAPPINGS as INSIGHTFACE_NODE_DISPLAY_NAME_MAPPINGS,
+    )
+except ImportError:
+    INSIGHTFACE_NODE_CLASS_MAPPINGS = {}
+    INSIGHTFACE_NODE_DISPLAY_NAME_MAPPINGS = {}
 
 NODE_CLASS_MAPPINGS = {
     'DetectFaces': DetectFaces,
@@ -26,6 +32,9 @@ NODE_CLASS_MAPPINGS = {
     "SaveImageWebsocketNew": SaveImageWebsocket,
 }
 
+# Add InsightFace segmentation nodes
+NODE_CLASS_MAPPINGS.update(INSIGHTFACE_NODE_CLASS_MAPPINGS)
+
 NODE_DISPLAY_NAME_MAPPINGS = {
     'DetectFaces': 'DetectFaces',
     'DetectFaceByIndex': 'Detect Face By Index',
@@ -45,6 +54,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     'ColorAdjustNew(FaceParsing)': 'Color Adjust (Face Parsing) New',
     "SaveImageWebsocketNew": "Save Image Websocket New To JPG",
 }
+
+# Add InsightFace segmentation node display names
+NODE_DISPLAY_NAME_MAPPINGS.update(INSIGHTFACE_NODE_DISPLAY_NAME_MAPPINGS)
 
 
 
