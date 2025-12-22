@@ -30,9 +30,9 @@ dev = [
 ]
 
 [project.urls]
-Repository = "https://github.com/upseem/comfyui_facetools_disabled_mediapipe"  # ← Key field: resolves repository is required
-Homepage = "https://github.com/upseem/comfyui_facetools_disabled_mediapipe"
-Bugs = "https://github.com/upseem/comfyui_facetools_disabled_mediapipe/issues"
+Repository = "https://github.com/ussoewwin/comfyui_facetools_disabled_mediapipe"  # ← Key field: resolves repository is required
+Homepage = "https://github.com/ussoewwin/comfyui_facetools_disabled_mediapipe"
+Bugs = "https://github.com/ussoewwin/comfyui_facetools_disabled_mediapipe/issues"
 
 [tool.comfy]
 # Must match the Publisher created on Registry (the part after @)
