@@ -25,6 +25,7 @@ Face detection & restoration tools for ComfyUI by Sunx.ai
 
 # Features
 
+## Face Detection & Processing
 - **DetectFaces**: Detects faces in images and returns the face with the largest area
 - **DetectFaceByIndex**: Detects faces by index, supporting left-to-right selection of specific faces (0=leftmost, 1=second, etc.), with gender filtering support (0=any gender, 1=male, 2=female). Gender detection is only enabled when needed for improved performance.
 - **DetectFaceByGender**: Detects faces by gender and index, supporting filtering of male/female faces and selection in left-to-right order
@@ -33,6 +34,11 @@ Face detection & restoration tools for ComfyUI by Sunx.ai
 - **InstantID**: Face identity preservation functionality
 - **ColorAdjust**: Face color adjustment
 - **SaveImageWebsocket**: Saves images via WebSocket
+
+## Segmentation (InsightFace-based)
+- **Facetools Human Segmentation (InsightFace)**: Human segmentation using InsightFace face detection. Detects faces and generates segmentation masks with configurable confidence threshold. Returns RGBA image with mask and separate mask output.
+- **Facetools Person Mask Ultra V2 (InsightFace)**: Advanced person mask generation with detailed component selection (face, hair, body, clothes, accessories, background). Supports multiple detail processing methods (VITMatte, PyMatting, GuidedFilter) with configurable erode/dilate operations, black/white point adjustment, and device selection (CUDA/CPU).
+- **Facetools Facial Segment (InsightFace)**: Facial feature segmentation for individual components. Supports selective segmentation of left/right eyes, eyebrows, lips, and teeth. Uses InsightFace keypoints for precise feature detection and generates masks with Gaussian blur for smooth edges.
 
 ## Installation Dependencies
 
