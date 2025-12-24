@@ -48,18 +48,31 @@ if (document.readyState === 'loading') {
 const findWidgetByName = (node, name) => node.widgets.find((w) => w.name === name);
 
 // Helper function to toggle widget visibility
+// NOTE: We must keep the original widget for workflow persistence, but fully disable drawing.
 const origProps = {};
-const toggleWidget = (node, widget, show = false, suffix = "") => {
+const toggleWidget = (node, widget, show = false) => {
     if (!widget) return;
     if (!origProps[widget.name]) {
-        origProps[widget.name] = { origType: widget.type, origComputeSize: widget.computeSize };
+        origProps[widget.name] = {
+            origType: widget.type,
+            origComputeSize: widget.computeSize,
+            origDraw: widget.draw,
+        };
     }
     const origSize = node.size;
 
-    widget.type = show ? origProps[widget.name].origType : "facetoolsHidden" + suffix;
-    widget.computeSize = show ? origProps[widget.name].origComputeSize : () => [0, -4];
+    if (show) {
+        widget.type = origProps[widget.name].origType;
+        widget.computeSize = origProps[widget.name].origComputeSize;
+        widget.draw = origProps[widget.name].origDraw;
+    } else {
+        // Use a standard hidden type and null-draw so ComfyUI doesn't render an input.
+        widget.type = "hidden";
+        widget.computeSize = () => [0, 0];
+        widget.draw = () => {};
+    }
 
-    widget.linkedWidgets?.forEach(w => toggleWidget(node, w, show, ":" + widget.name));
+    widget.linkedWidgets?.forEach(w => toggleWidget(node, w, show));
 
     const height = show ? Math.max(node.computeSize()[1], origSize[1]) : node.size[1];
     node.setSize([node.size[0], height]);
@@ -75,7 +88,7 @@ const tags = {
     "face_parsing": ["Background", "Skin", "Left-eyebrow", "Right-eyebrow", "Left-eye", "Right-eye", "Nose", "Mouth", "Upper-lip", "Lower-lip"]
 };
 
-function getTagList(tagArray) {
+function getTagList(tagArray, storeWidget, nodeRef) {
     let rlist = [];
     tagArray.forEach((k, i) => {
         rlist.push($el(
@@ -112,32 +125,32 @@ function getTagList(tagArray) {
                             el.style.color = 'var(--input-text)';
                         }
                     };
-                    const updateWidgetValue = () => {
-                        // Find the parent node and selector widget
-                        let currentNode = el;
-                        while (currentNode && !currentNode.comfyClass) {
-                            currentNode = currentNode.parentElement;
-                        }
-                        if (currentNode && currentNode.widgets) {
-                            const maskWidget = currentNode.widgets.find(w => w.name === 'mask_components');
-                            if (maskWidget && maskWidget.value !== undefined) {
-                                // Trigger value update by reading it (which will call the getter)
-                                const currentValue = maskWidget.value;
-                                // Force update by setting dirty flag
-                                if (currentNode.graph) {
-                                    currentNode.graph._version = (currentNode.graph._version || 0) + 1;
-                                }
-                                if (currentNode.setDirtyCanvas) {
-                                    currentNode.setDirtyCanvas(true);
-                                }
-                            }
-                        }
-                    };
+                    // expose for external restore
+                    el.__facetoolsUpdateSelectedStyle = updateSelectedStyle;
                     el.children[0].onclick = () => {
                         el.classList.toggle("facetools-prompt-styles-tag-selected");
                         updateSelectedStyle();
-                        // Update widget value to trigger save
-                        updateWidgetValue();
+                        // Persist selection by updating the original ComfyUI widget value (this is what gets saved)
+                        try {
+                            const ul = el.closest('ul.facetools-prompt-styles-list');
+                            const selected = [];
+                            if (ul) {
+                                ul.querySelectorAll('label.facetools-prompt-styles-tag').forEach(lbl => {
+                                    if (lbl.classList.contains('facetools-prompt-styles-tag-selected')) {
+                                        selected.push(lbl.dataset.tag);
+                                    }
+                                });
+                            }
+                            const val = selected.length ? selected.join(',') : '0';
+                            if (storeWidget) {
+                                storeWidget.value = val;
+                                if (typeof storeWidget.callback === 'function') storeWidget.callback(val);
+                            }
+                            if (nodeRef?.graph) nodeRef.graph._version = (nodeRef.graph._version || 0) + 1;
+                            if (nodeRef?.setDirtyCanvas) nodeRef.setDirtyCanvas(true, true);
+                        } catch (e) {
+                            console.warn('[facetools] Failed to persist mask_components selection:', e);
+                        }
                     };
                     el.onmouseenter = () => {
                         if (!el.classList.contains('facetools-prompt-styles-tag-selected')) {
@@ -225,9 +238,8 @@ app.registerExtension({
                         margin: '0'
                     }
                 }, []);
-                let method_values = '';
 
-                this.setProperty("values", []);
+                const nodeRef = this;
 
                 // Check if addDOMWidget exists
                 if (!this.addDOMWidget) {
@@ -236,16 +248,15 @@ app.registerExtension({
                 }
 
                 console.log('[facetools] Creating DOM widget for mask_components');
-                
-                // Remove existing mask_components widget if it exists
-                const existingMaskWidget = this.widgets.find((w) => w.name === 'mask_components');
-                if (existingMaskWidget) {
-                    console.log('[facetools] Removing existing mask_components widget');
-                    const index = this.widgets.indexOf(existingMaskWidget);
-                    if (index !== -1) {
-                        this.widgets.splice(index, 1);
-                    }
+
+                // Keep the original widget (mask_components) as the true persisted value container
+                let storeWidget = findWidgetByName(this, 'mask_components');
+                if (!storeWidget && this.addWidget) {
+                    // safety fallback
+                    storeWidget = this.addWidget('text', 'mask_components', '0');
                 }
+                // Hide it, but do NOT remove it (ComfyUI saves this widget value in workflow)
+                toggleWidget(this, storeWidget, false, '_store');
                 
                 // Create DOM widget with inline styles to ensure CSS is applied
                 const containerDiv = $el('div.facetools-prompt-styles', {
@@ -254,208 +265,53 @@ app.registerExtension({
                         width: '100%'
                     }
                 }, [list]);
-                let selector = this.addDOMWidget('mask_components', "btn", containerDiv);
-                console.log('[facetools] DOM widget created:', selector);
-                console.log('[facetools] selector.element:', selector?.element);
-                console.log('[facetools] selector.element type:', selector?.element?.constructor?.name);
+                // Create a separate UI widget (does not get serialized), name must NOT clash with input name
+                const selectorUI = this.addDOMWidget('mask_components_ui', "btn", containerDiv);
+                console.log('[facetools] DOM widget created:', selectorUI);
 
-                    // Store original value getter/setter if they exist
-                    const methodWidget = this.widgets[method];
-                    if (methodWidget) {
-                        // Check if property descriptor already exists
-                        const descriptor = Object.getOwnPropertyDescriptor(methodWidget, 'value');
-                        if (descriptor && !descriptor.configurable) {
-                            // If not configurable, we can't redefine it - use a different approach
-                            console.warn('[facetools] Cannot redefine method widget value property');
-                            return;
-                        }
-                        
-                        Object.defineProperty(methodWidget, 'value', {
-                            configurable: true,
-                            enumerable: true,
-                            set: (value) => {
-                                method_values = value;
-                                if (method_values && selector && selector.element && selector.element.children && selector.element.children[0]) {
-                                    selector.element.children[0].innerHTML = '';
-                                    if (method_values == 'selfie_multiclass_256x256') {
-                                        toggleWidget(this, findWidgetByName(this, 'confidence'), true);
-                                        this.setSize([300, 260]);
-                                    } else {
-                                        toggleWidget(this, findWidgetByName(this, 'confidence'));
-                                        this.setSize([300, 500]);
-                                    }
-                                    if (tags[method_values]) {
-                                        let list = getTagList(tags[method_values]);
-                                        selector.element.children[0].append(...list);
-                                    }
-                                }
-                            },
-                            get: () => {
-                                return method_values;
-                            }
-                        });
-                    }
+                const methodWidget = this.widgets[method];
 
-                let mask_select_values = '';
-
-                // Define selector.value property
-                // Store a reference to the node for use in getter
-                const nodeRef = this;
-                
-                // First, check if value property already exists
-                const existingDescriptor = Object.getOwnPropertyDescriptor(selector, 'value');
-                if (existingDescriptor && !existingDescriptor.configurable) {
-                    console.warn('[facetools] selector.value property exists and is not configurable, will use wrapper approach');
-                    // If not configurable, we'll wrap the existing property
-                    const originalGetter = existingDescriptor.get;
-                    const originalSetter = existingDescriptor.set;
-                    const originalValue = existingDescriptor.value;
-                    
-                    // Try to override by setting a new property on the prototype or using a different approach
-                    // For now, we'll just log a warning and continue
-                }
-                
-                try {
-                    // Try to delete existing property if configurable
-                    if (existingDescriptor && existingDescriptor.configurable) {
-                        delete selector.value;
-                    }
-                    
-                    Object.defineProperty(selector, "value", {
-                        configurable: true,
-                        enumerable: true,
-                        set: function(value) {
-                            // Store the value for persistence
-                            this._internalValue = value || '';
-                            mask_select_values = value || '';
-                            setTimeout(() => {
-                                if (this.element && this.element.children && this.element.children[0]) {
-                                    const tagList = this.element.children[0];
-                                    if (tagList) {
-                                        tagList.querySelectorAll(".facetools-prompt-styles-tag").forEach(el => {
-                                            let arr = (value || '').split(',').filter(v => v.trim() !== '');
-                                            if (arr.includes(el.dataset.tag)) {
-                                                el.classList.add("facetools-prompt-styles-tag-selected");
-                                                if (el.children && el.children[0]) {
-                                                    el.children[0].checked = true;
-                                                }
-                                                // Update style
-                                                el.style.backgroundColor = 'var(--theme-color-light)';
-                                                el.style.borderColor = 'var(--theme-color-light)';
-                                                el.style.color = 'var(--comfy-menu-bg)';
-                                            } else {
-                                                el.classList.remove("facetools-prompt-styles-tag-selected");
-                                                if (el.children && el.children[0]) {
-                                                    el.children[0].checked = false;
-                                                }
-                                                // Update style
-                                                el.style.backgroundColor = 'var(--comfy-input-bg)';
-                                                el.style.borderColor = 'var(--border-color)';
-                                                el.style.color = 'var(--input-text)';
-                                            }
-                                        });
-                                        // Update node properties
-                                        if (nodeRef && nodeRef.properties) {
-                                            const selectedValues = (value || '').split(',').filter(v => v.trim() !== '');
-                                            nodeRef.properties["values"] = selectedValues;
-                                        }
-                                    }
-                                }
-                            }, 100);
-                        },
-                        get: function() {
-                            if (this.element && this.element.children && this.element.children[0]) {
-                                const tagList = this.element.children[0];
-                                if (tagList) {
-                                    const selectedValues = [];
-                                    tagList.querySelectorAll(".facetools-prompt-styles-tag").forEach(el => {
-                                        if (el.classList.contains("facetools-prompt-styles-tag-selected")) {
-                                            selectedValues.push(el.dataset.tag);
-                                        }
-                                    });
-                                    mask_select_values = selectedValues.join(',');
-                                    // Also update node properties for persistence
-                                    if (nodeRef && nodeRef.properties) {
-                                        nodeRef.properties["values"] = selectedValues;
-                                    }
-                                    // Store in widget's internal value for ComfyUI to save
-                                    if (this._internalValue !== mask_select_values) {
-                                        this._internalValue = mask_select_values;
-                                    }
-                                    return mask_select_values || '';
-                                }
-                            }
-                            // Return stored value if available (for restoration)
-                            if (this._internalValue !== undefined) {
-                                return this._internalValue;
-                            }
-                            return mask_select_values || '';
-                        }
+                const applySelectionFromValue = (val) => {
+                    const arr = (val || '0').split(',').map(v => v.trim()).filter(v => v !== '');
+                    list.querySelectorAll('label.facetools-prompt-styles-tag').forEach(lbl => {
+                        const selected = arr.includes(lbl.dataset.tag);
+                        lbl.classList.toggle('facetools-prompt-styles-tag-selected', selected);
+                        if (lbl.__facetoolsUpdateSelectedStyle) lbl.__facetoolsUpdateSelectedStyle();
+                        const cb = lbl.querySelector('input[type=\"checkbox\"]');
+                        if (cb) cb.checked = selected;
                     });
-                } catch (e) {
-                    console.warn('[facetools] Could not define selector.value property:', e);
-                    // Fallback: try to use the existing value property if it exists
-                    if (selector.value !== undefined) {
-                        console.log('[facetools] Using existing selector.value property');
+                };
+
+                const rebuildTagList = (methodValue) => {
+                    const m = methodValue || 'selfie_multiclass_256x256';
+                    list.innerHTML = '';
+
+                    if (m === 'selfie_multiclass_256x256') {
+                        toggleWidget(nodeRef, findWidgetByName(nodeRef, 'confidence'), true);
+                        nodeRef.setSize([300, 260]);
+                    } else {
+                        toggleWidget(nodeRef, findWidgetByName(nodeRef, 'confidence'));
+                        nodeRef.setSize([300, 500]);
                     }
-                }
+
+                    const tagArray = tags[m] || [];
+                    const nodes = getTagList(tagArray, storeWidget, nodeRef);
+                    list.append(...nodes);
+                    // restore selection from the persisted widget value
+                    applySelectionFromValue(storeWidget?.value || '0');
+                };
 
                 // 初始化
                 setTimeout(_ => {
-                    console.log('[facetools] Initializing widget, method_values:', method_values);
-                    if (!method_values) {
-                        method_values = 'selfie_multiclass_256x256';
-                    }
-                    console.log('[facetools] selector:', selector);
-                    console.log('[facetools] selector.element:', selector?.element);
-                    
-                    // Try to find the ul element in different ways
-                    let tagListContainer = null;
-                    if (selector) {
-                        // Case 1: selector.element is the div, and children[0] is the ul
-                        if (selector.element && selector.element.children && selector.element.children[0]) {
-                            tagListContainer = selector.element.children[0];
-                            console.log('[facetools] Found ul via selector.element.children[0]');
-                        }
-                        // Case 2: selector.element is directly the div, and we need to find ul inside
-                        else if (selector.element) {
-                            const ulElement = selector.element.querySelector('ul.facetools-prompt-styles-list');
-                            if (ulElement) {
-                                tagListContainer = ulElement;
-                                console.log('[facetools] Found ul via querySelector');
-                            }
-                        }
-                        // Case 3: selector itself might be the element
-                        else if (selector.querySelector) {
-                            const ulElement = selector.querySelector('ul.facetools-prompt-styles-list');
-                            if (ulElement) {
-                                tagListContainer = ulElement;
-                                console.log('[facetools] Found ul via selector.querySelector');
-                            }
-                        }
-                    }
-                    
-                    if (tagListContainer) {
-                        console.log('[facetools] Setting up tag list for method:', method_values);
-                        tagListContainer.innerHTML = '';
-                        if (tags[method_values]) {
-                            let list = getTagList(tags[method_values]);
-                            tagListContainer.append(...list);
-                            console.log('[facetools] Tag list appended, count:', list.length);
-                        }
-                    } else {
-                        console.warn('[facetools] Could not find tag list container');
-                        console.warn('[facetools] selector keys:', selector ? Object.keys(selector) : 'null');
-                        console.warn('[facetools] selector.element:', selector?.element);
-                        console.warn('[facetools] selector.element type:', selector?.element?.constructor?.name);
-                    }
-                    
-                    if (method_values == 'selfie_multiclass_256x256') {
-                        toggleWidget(this, findWidgetByName(this, 'confidence'), true);
-                        this.setSize([300, 260]);
-                    } else {
-                        toggleWidget(this, findWidgetByName(this, 'confidence'));
-                        this.setSize([300, 500]);
+                    // initial render
+                    rebuildTagList(methodWidget?.value);
+                    // hook method changes (no Object.defineProperty: avoids conflicts)
+                    if (methodWidget) {
+                        const origCb = methodWidget.callback;
+                        methodWidget.callback = (v) => {
+                            if (origCb) origCb(v);
+                            rebuildTagList(v);
+                        };
                     }
                 }, 1);
 
