@@ -475,13 +475,13 @@ class FacetoolsFacialSegment:
 
 
 NODE_CLASS_MAPPINGS = {
-    "facetools_humanSegmentation": FacetoolsHumanSegmentation,
+    "facetools_humanSegmentationIF": FacetoolsHumanSegmentation,
     "facetools_PersonMaskUltraV2": FacetoolsPersonMaskUltraV2,
     "facetools_FacialSegment": FacetoolsFacialSegment,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "facetools_humanSegmentation": "Facetools Human Segmentation (InsightFace)",
+    "facetools_humanSegmentationIF": "Facetools Human Segmentation (InsightFace)",
     "facetools_PersonMaskUltraV2": "Facetools Person Mask Ultra V2 (InsightFace)",
     "facetools_FacialSegment": "Facetools Facial Segment (InsightFace)",
 }
