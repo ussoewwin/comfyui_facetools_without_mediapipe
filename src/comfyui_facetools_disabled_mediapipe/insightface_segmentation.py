@@ -375,22 +375,33 @@ class FacetoolsHumanSegmentation:
                 mask = torch.zeros((image.shape[0], image.shape[1], image.shape[2]), dtype=torch.float32)
 
         # use crop
-        bbox = [[0, 0, 0, 0]]
+        # Initialize bbox with correct number of entries (one per image)
+        num_images = output_image.shape[0] if hasattr(output_image, 'shape') else 1
+        bbox = [[0, 0, 0, 0] for _ in range(num_images)]
+        
         if crop_multi > 0.0:
-            crop_instance = ImageCropFromMask()
-            output_image, mask, bbox_raw = crop_instance.crop(output_image, mask, crop_multi, crop_multi, 1.0)
-            # Convert bbox from (x, y, w, h) tuples to [[x1, y1, x2, y2]] list format
-            if bbox_raw and len(bbox_raw) > 0:
-                bbox = []
-                for b in bbox_raw:
-                    if isinstance(b, (tuple, list)) and len(b) >= 4:
-                        # Convert from (x, y, w, h) to [x1, y1, x2, y2]
-                        x, y, w, h = b[0], b[1], b[2], b[3]
-                        bbox.append([int(x), int(y), int(x + w), int(y + h)])
-                    else:
+            try:
+                crop_instance = ImageCropFromMask()
+                output_image, mask, bbox_raw = crop_instance.crop(output_image, mask, crop_multi, crop_multi, 1.0)
+                # Convert bbox from (x, y, w, h) tuples to [[x1, y1, x2, y2]] list format
+                if bbox_raw and len(bbox_raw) > 0:
+                    bbox = []
+                    for b in bbox_raw:
+                        if isinstance(b, (tuple, list)) and len(b) >= 4:
+                            # Convert from (x, y, w, h) to [x1, y1, x2, y2]
+                            x, y, w, h = b[0], b[1], b[2], b[3]
+                            bbox.append([int(x), int(y), int(x + w), int(y + h)])
+                        else:
+                            bbox.append([0, 0, 0, 0])
+                    # Ensure bbox has correct length
+                    while len(bbox) < num_images:
                         bbox.append([0, 0, 0, 0])
-            else:
-                bbox = [[0, 0, 0, 0]]
+                else:
+                    bbox = [[0, 0, 0, 0] for _ in range(num_images)]
+            except Exception as e:
+                print(f"Error in image cropping: {e}")
+                # Fallback: return default bbox for each image
+                bbox = [[0, 0, 0, 0] for _ in range(num_images)]
 
         return (output_image, mask, bbox)
 
