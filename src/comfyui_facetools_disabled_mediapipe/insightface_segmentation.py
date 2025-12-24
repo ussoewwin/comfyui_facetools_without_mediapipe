@@ -376,7 +376,11 @@ class FacetoolsHumanSegmentation:
 
         # use crop
         # Initialize bbox with correct number of entries (one per image)
-        num_images = output_image.shape[0] if hasattr(output_image, 'shape') else 1
+        try:
+            num_images = output_image.shape[0] if hasattr(output_image, 'shape') and len(output_image.shape) >= 4 else 1
+        except:
+            num_images = 1
+        
         bbox = [[0, 0, 0, 0] for _ in range(num_images)]
         
         if crop_multi > 0.0:
@@ -402,6 +406,14 @@ class FacetoolsHumanSegmentation:
                 print(f"Error in image cropping: {e}")
                 # Fallback: return default bbox for each image
                 bbox = [[0, 0, 0, 0] for _ in range(num_images)]
+        
+        # Ensure bbox is always a list of lists (never a single list)
+        if not isinstance(bbox, list) or (len(bbox) > 0 and not isinstance(bbox[0], list)):
+            bbox = [[0, 0, 0, 0] for _ in range(num_images)]
+        
+        # Ensure bbox has at least one entry
+        if len(bbox) == 0:
+            bbox = [[0, 0, 0, 0]]
 
         return (output_image, mask, bbox)
 
