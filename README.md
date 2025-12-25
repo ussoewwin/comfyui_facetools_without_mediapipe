@@ -63,6 +63,9 @@ This extension was created to address the compatibility issue with MediaPipe in 
 - **facetools_FacialSegment**: Facial feature segmentation for individual components. Adapted from [ComfyUI_LayerStyle_Advance](https://github.com/chflame163/ComfyUI_LayerStyle_Advance)'s `MediapipeFacialSegment` node. Uses InsightFace keypoints (right_eye, left_eye, nose, mouth_left, mouth_right) to segment facial features. Supports selective segmentation of left/right eyes, left/right eyebrows, lips, and teeth. Processes images at 4x scale for better detection accuracy, then scales masks back to original size. Applies Gaussian blur (radius 2) to mask edges for smooth transitions. Returns RGBA image with feature mask and separate mask output. Note: Feature detection is based on keypoint positions and estimated sizes, which may be less precise than MediaPipe's pixel-level segmentation.
 
   <img src="png/facial.png" width="400" alt="Facetools Facial Segment">
+- **FacetoolsFaceMesh**: Face mesh preprocessor using InsightFace (replacing MediaPipe). Adapted from [comfyui_controlnet_aux](https://github.com/Fannovel16/comfyui_controlnet_aux). Detects faces using InsightFace and generates face mesh annotations with keypoints (eyes, eyebrows, nose, mouth). Supports configurable maximum faces (1-50), minimum confidence threshold (0.1-1.0), and resolution (64-2048). Processes images with padding to maintain aspect ratio, then restores to original size. Returns annotated image with face mesh overlay. Note: Face mesh is generated from InsightFace keypoints and estimated facial features, which may be less detailed than MediaPipe's mesh generation.
+
+  <img src="png/facemesh.png" width="400" alt="Facetools Face Mesh">
 
 ## Installation Dependencies
 
@@ -145,6 +148,7 @@ The following components are adapted from other repositories and may have differ
 - **Facetools Human Segmentation (InsightFace)**: Adapted from [comfyui-easy-use](https://github.com/yolain/comfyui-easy-use). Please refer to the original repository for its license information.
 - **Facetools Person Mask Ultra V2 (InsightFace)**: Adapted from [ComfyUI_LayerStyle_Advance](https://github.com/chflame163/ComfyUI_LayerStyle_Advance). Please refer to the original repository for its license information.
 - **Facetools Facial Segment (InsightFace)**: Adapted from [ComfyUI_LayerStyle_Advance](https://github.com/chflame163/ComfyUI_LayerStyle_Advance). Please refer to the original repository for its license information.
+- **Facetools Face Mesh (InsightFace)**: Adapted from [comfyui_controlnet_aux](https://github.com/Fannovel16/comfyui_controlnet_aux) (Apache-2.0).
 
 **Important**: When using these adapted components, you must comply with both this project's GPL-3.0 license and the licenses of the original repositories from which these components were adapted.
 

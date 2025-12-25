@@ -20,6 +20,15 @@ except ImportError:
     INSIGHTFACE_NODE_CLASS_MAPPINGS = {}
     INSIGHTFACE_NODE_DISPLAY_NAME_MAPPINGS = {}
 
+try:
+    from .src.comfyui_facetools_disabled_mediapipe.face_mesh import (
+        NODE_CLASS_MAPPINGS as FACE_MESH_NODE_CLASS_MAPPINGS,
+        NODE_DISPLAY_NAME_MAPPINGS as FACE_MESH_NODE_DISPLAY_NAME_MAPPINGS,
+    )
+except ImportError:
+    FACE_MESH_NODE_CLASS_MAPPINGS = {}
+    FACE_MESH_NODE_DISPLAY_NAME_MAPPINGS = {}
+
 NODE_CLASS_MAPPINGS = {
     'DetectFaces': DetectFaces,
     'DetectFaceByIndex': DetectFaceByIndex,
@@ -48,6 +57,9 @@ NODE_CLASS_MAPPINGS.update(SAM3_NODE_CLASS_MAPPINGS)
 # Add InsightFace segmentation nodes
 NODE_CLASS_MAPPINGS.update(INSIGHTFACE_NODE_CLASS_MAPPINGS)
 
+# Add Face Mesh nodes
+NODE_CLASS_MAPPINGS.update(FACE_MESH_NODE_CLASS_MAPPINGS)
+
 NODE_DISPLAY_NAME_MAPPINGS = {
     'DetectFaces': 'DetectFaces',
     'DetectFaceByIndex': 'Detect Face By Index',
@@ -73,6 +85,9 @@ NODE_DISPLAY_NAME_MAPPINGS.update(SAM3_NODE_DISPLAY_NAME_MAPPINGS)
 
 # Add InsightFace segmentation node display names
 NODE_DISPLAY_NAME_MAPPINGS.update(INSIGHTFACE_NODE_DISPLAY_NAME_MAPPINGS)
+
+# Add Face Mesh node display names
+NODE_DISPLAY_NAME_MAPPINGS.update(FACE_MESH_NODE_DISPLAY_NAME_MAPPINGS)
 
 
 
