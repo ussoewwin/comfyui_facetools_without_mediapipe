@@ -145,10 +145,10 @@ This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**
 The following components are adapted from other repositories and may have different licenses:
 
 - **SAM3SegmentV3**: Adapted from [ComfyUI-RMBG](https://github.com/1038lab/ComfyUI-RMBG) (GPL-3.0). Uses SAM3 (Segment Anything Model 3) from [1038lab](https://huggingface.co/1038lab/sam3). The SAM3 model files are automatically downloaded from HuggingFace on first use.
-- **Facetools Human Segmentation (InsightFace)**: Adapted from [comfyui-easy-use](https://github.com/yolain/comfyui-easy-use). Please refer to the original repository for its license information.
-- **Facetools Person Mask Ultra V2 (InsightFace)**: Adapted from [ComfyUI_LayerStyle_Advance](https://github.com/chflame163/ComfyUI_LayerStyle_Advance). Please refer to the original repository for its license information.
-- **Facetools Facial Segment (InsightFace)**: Adapted from [ComfyUI_LayerStyle_Advance](https://github.com/chflame163/ComfyUI_LayerStyle_Advance). Please refer to the original repository for its license information.
+- **Facetools Human Segmentation (InsightFace)**: Adapted from [comfyui-easy-use](https://github.com/yolain/comfyui-easy-use) (GPL-3.0).
+- **Facetools Person Mask Ultra V2 (InsightFace)**: Adapted from [ComfyUI_LayerStyle_Advance](https://github.com/chflame163/ComfyUI_LayerStyle_Advance) (MIT).
+- **Facetools Facial Segment (InsightFace)**: Adapted from [ComfyUI_LayerStyle_Advance](https://github.com/chflame163/ComfyUI_LayerStyle_Advance) (MIT).
 - **Facetools Face Mesh (InsightFace)**: Adapted from [comfyui_controlnet_aux](https://github.com/Fannovel16/comfyui_controlnet_aux) (Apache-2.0).
 
-**Important**: When using these adapted components, you must comply with both this project's GPL-3.0 license and the licenses of the original repositories from which these components were adapted.
+**Important**: When using these adapted components, you must comply with both this project's GPL-3.0 license and the licenses of the original repositories from which these components were adapted (GPL-3.0, MIT, and Apache-2.0).
 
