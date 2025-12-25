@@ -62,6 +62,8 @@ This extension was created to address the compatibility issue with MediaPipe in 
   <img src="png/facetools_PersonMaskUltraV2.png" width="400" alt="Facetools Person Mask Ultra V2">
 - **facetools_FacialSegment**: Facial feature segmentation for individual components. Adapted from [ComfyUI_LayerStyle_Advance](https://github.com/chflame163/ComfyUI_LayerStyle_Advance)'s `MediapipeFacialSegment` node. Uses InsightFace keypoints (right_eye, left_eye, nose, mouth_left, mouth_right) to segment facial features. Supports selective segmentation of left/right eyes, left/right eyebrows, lips, and teeth. Processes images at 4x scale for better detection accuracy, then scales masks back to original size. Applies Gaussian blur (radius 2) to mask edges for smooth transitions. Returns RGBA image with feature mask and separate mask output. Note: Feature detection is based on keypoint positions and estimated sizes, which may be less precise than MediaPipe's pixel-level segmentation.
 
+  <img src="png/facial.png" width="400" alt="Facetools Facial Segment">
+
 ## Installation Dependencies
 
 This extension uses InsightFace for high-precision gender detection (replacing mediapipe for Python 3.13 compatibility). Models will be automatically downloaded on first use:
