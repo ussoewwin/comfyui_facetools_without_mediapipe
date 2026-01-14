@@ -1,5 +1,19 @@
-from .nodes import *
+from .nodes.nodes import *
 from .InstantID import *
+
+# Image Resize
+try:
+    from .nodes.image_resize import (
+        NODE_CLASS_MAPPINGS as IMAGE_RESIZE_NODE_CLASS_MAPPINGS,
+        NODE_DISPLAY_NAME_MAPPINGS as IMAGE_RESIZE_NODE_DISPLAY_NAME_MAPPINGS,
+    )
+except Exception as e:
+    print(f"[comfyui_facetools] Failed to load image_resize: {e}")
+    import traceback
+    traceback.print_exc()
+    IMAGE_RESIZE_NODE_CLASS_MAPPINGS = {}
+    IMAGE_RESIZE_NODE_DISPLAY_NAME_MAPPINGS = {}
+
 
 # SAM3 (local) - keep optional so the rest of the extension still loads even if SAM3 deps are missing.
 try:
@@ -49,7 +63,11 @@ NODE_CLASS_MAPPINGS = {
     'ColorAdjustNew(FaceParsing)': ColorAdjust,
 
     "SaveImageWebsocketNew": SaveImageWebsocket,
+
 }
+
+# Add Image Resize nodes
+NODE_CLASS_MAPPINGS.update(IMAGE_RESIZE_NODE_CLASS_MAPPINGS)
 
 # Add SAM3 nodes (if available)
 NODE_CLASS_MAPPINGS.update(SAM3_NODE_CLASS_MAPPINGS)
@@ -78,7 +96,11 @@ NODE_DISPLAY_NAME_MAPPINGS = {
 
     'ColorAdjustNew(FaceParsing)': 'Color Adjust (Face Parsing) New',
     "SaveImageWebsocketNew": "Save Image Websocket New To JPG",
+
 }
+
+# Add Image Resize node display names
+NODE_DISPLAY_NAME_MAPPINGS.update(IMAGE_RESIZE_NODE_DISPLAY_NAME_MAPPINGS)
 
 # Add SAM3 node display names (if available)
 NODE_DISPLAY_NAME_MAPPINGS.update(SAM3_NODE_DISPLAY_NAME_MAPPINGS)

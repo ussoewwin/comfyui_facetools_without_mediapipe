@@ -9,7 +9,7 @@ import time
 from io import BytesIO
 
 
-from .utils import *
+from ..utils import *
 
 class DetectFaces:
     @classmethod
@@ -511,8 +511,3 @@ class SaveImageWebsocket:
     @classmethod
     def IS_CHANGED(s, images, jpeg_quality):
         return time.time()
-
-
-
-
-
