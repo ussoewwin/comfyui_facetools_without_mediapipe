@@ -67,6 +67,7 @@ This extension was created to address the compatibility issue with MediaPipe in 
 - **FacetoolsFaceMesh**: Face mesh preprocessor using InsightFace (replacing MediaPipe). Adapted from [comfyui_controlnet_aux](https://github.com/Fannovel16/comfyui_controlnet_aux). Detects faces using InsightFace and generates face mesh annotations with keypoints (eyes, eyebrows, nose, mouth). Supports configurable maximum faces (1-50), minimum confidence threshold (0.1-1.0), and resolution (64-2048). Processes images with padding to maintain aspect ratio, then restores to original size. Returns annotated image with face mesh overlay. Note: Face mesh is generated from InsightFace keypoints and estimated facial features, which may be less detailed than MediaPipe's mesh generation.
 
   <img src="png/facemesh.png" width="400" alt="Facetools Face Mesh">
+- **Face Parsing (integrated)**: Face parsing / segmentation node set adapted from [comfyui_face_parsing](https://github.com/Ryuukeisyou/comfyui_face_parsing) and integrated under `nodes/face_parsing` (not a separate custom_nodes install). Uses the [face parsing model](https://huggingface.co/jonathandinu/face-parsing) with YOLOv8 face detection for higher segmentation accuracy, plus bbox/image/mask helpers and a guided filter for skin smoothing. On first load, required model files are downloaded to ComfyUI `models/face_parsing/` and `models/ultralytics/bbox/`. Nodes appear under the `face_parsing` category (e.g. `FaceParse(FaceParsing)`, `BBoxDetect(FaceParsing)`, `GuidedFilter(FaceParsing)`).
 
 ## Installation Dependencies
 
@@ -150,6 +151,7 @@ The following components are adapted from other repositories and may have differ
 - **Facetools Person Mask Ultra V2 (InsightFace)**: Adapted from [ComfyUI_LayerStyle_Advance](https://github.com/chflame163/ComfyUI_LayerStyle_Advance) (MIT).
 - **Facetools Facial Segment (InsightFace)**: Adapted from [ComfyUI_LayerStyle_Advance](https://github.com/chflame163/ComfyUI_LayerStyle_Advance) (MIT).
 - **Facetools Face Mesh (InsightFace)**: Adapted from [comfyui_controlnet_aux](https://github.com/Fannovel16/comfyui_controlnet_aux) (Apache-2.0).
+- **Face Parsing nodes** (`nodes/face_parsing/`): Adapted from [comfyui_face_parsing](https://github.com/Ryuukeisyou/comfyui_face_parsing) by Ryuukeisyou (MIT).
 
 **Important**: When using these adapted components, you must comply with both this project's GPL-3.0 license and the licenses of the original repositories from which these components were adapted (GPL-3.0, MIT, and Apache-2.0).
 

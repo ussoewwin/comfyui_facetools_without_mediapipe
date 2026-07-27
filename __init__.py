@@ -43,6 +43,21 @@ except ImportError:
     FACE_MESH_NODE_CLASS_MAPPINGS = {}
     FACE_MESH_NODE_DISPLAY_NAME_MAPPINGS = {}
 
+# Face Parsing (integrated from nodes/face_parsing)
+try:
+    from .nodes.face_parsing import (
+        NODE_CLASS_MAPPINGS as FACE_PARSING_NODE_CLASS_MAPPINGS,
+    )
+    FACE_PARSING_NODE_DISPLAY_NAME_MAPPINGS = {
+        key: key for key in FACE_PARSING_NODE_CLASS_MAPPINGS
+    }
+except Exception as e:
+    print(f"[comfyui_facetools] Failed to load face_parsing: {e}")
+    import traceback
+    traceback.print_exc()
+    FACE_PARSING_NODE_CLASS_MAPPINGS = {}
+    FACE_PARSING_NODE_DISPLAY_NAME_MAPPINGS = {}
+
 NODE_CLASS_MAPPINGS = {
     'DetectFaces': DetectFaces,
     'DetectFaceByIndex': DetectFaceByIndex,
@@ -78,6 +93,9 @@ NODE_CLASS_MAPPINGS.update(INSIGHTFACE_NODE_CLASS_MAPPINGS)
 # Add Face Mesh nodes
 NODE_CLASS_MAPPINGS.update(FACE_MESH_NODE_CLASS_MAPPINGS)
 
+# Add Face Parsing nodes
+NODE_CLASS_MAPPINGS.update(FACE_PARSING_NODE_CLASS_MAPPINGS)
+
 NODE_DISPLAY_NAME_MAPPINGS = {
     'DetectFaces': 'DetectFaces',
     'DetectFaceByIndex': 'Detect Face By Index',
@@ -111,7 +129,8 @@ NODE_DISPLAY_NAME_MAPPINGS.update(INSIGHTFACE_NODE_DISPLAY_NAME_MAPPINGS)
 # Add Face Mesh node display names
 NODE_DISPLAY_NAME_MAPPINGS.update(FACE_MESH_NODE_DISPLAY_NAME_MAPPINGS)
 
-
+# Add Face Parsing node display names
+NODE_DISPLAY_NAME_MAPPINGS.update(FACE_PARSING_NODE_DISPLAY_NAME_MAPPINGS)
 
 
 # Load ComfyUI frontend extensions (e.g. COLORCODE widget)
