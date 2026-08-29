@@ -161,6 +161,7 @@ The following components are adapted from other repositories and may have differ
 - **Facetools Facial Segment (InsightFace)**: Adapted from [ComfyUI_LayerStyle_Advance](https://github.com/chflame163/ComfyUI_LayerStyle_Advance) (MIT).
 - **Facetools Face Mesh (InsightFace)**: Adapted from [comfyui_controlnet_aux](https://github.com/Fannovel16/comfyui_controlnet_aux) (Apache-2.0).
 - **Face Parsing nodes** (`nodes/face_parsing/`): Adapted from [comfyui_face_parsing](https://github.com/Ryuukeisyou/comfyui_face_parsing) by Ryuukeisyou (MIT).
+- **Constrain Image (`FacetoolsConstrainImage`)**: Adapted from [ComfyUI-Custom-Scripts](https://github.com/pythongosssss/ComfyUI-Custom-Scripts) by pythongosssss (MIT). Modified with zero-division safety guards to handle 0-value inputs and unconstrained dimensions reliably.
 
 **Important**: When using these adapted components, you must comply with both this project's GPL-3.0 license and the licenses of the original repositories from which these components were adapted (GPL-3.0, MIT, and Apache-2.0).
 
