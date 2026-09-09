@@ -61,9 +61,6 @@ This extension was created to address the compatibility issue with MediaPipe in 
     - `crop_if_required`: `no` (scales to fit without cropping) or `yes` (center crops to fit the constraint box).
 
   <img src="png/constrain.png" width="400" alt="Constrain Image (Facetools)">
-- **SAM3SegmentV3**: Text-prompt based segmentation using SAM3 (Segment Anything Model 3). Adapted from [ComfyUI-RMBG](https://github.com/1038lab/ComfyUI-RMBG) and modified for ComfyUI Nodes 2.0 compatibility. Uses natural language prompts to segment objects in images. Note: This node is optional and will not prevent the extension from loading if SAM3 dependencies are missing. For technical details, see [SAM3 Technical Documentation](md/SAM3_EXPLANATION_SO_FAR_EN.md).
-
-  <img src="png/sam3.png" width="400" alt="SAM3SegmentV3">
 - **facetools_humanSegmentationIF**: Human segmentation using InsightFace face detection. Adapted from [comfyui-easy-use](https://github.com/yolain/comfyui-easy-use)'s `humanSegmentation` node. MediaPipe has been removed and replaced with InsightFace for Python 3.13+ compatibility. Additionally modified for ComfyUI Nodes 2.0 compatibility. Detects faces using InsightFace and generates segmentation masks by expanding bounding boxes by 10% for better coverage. Supports configurable confidence threshold (0.05-0.95) to filter detection results. Returns RGBA image with alpha channel mask and separate mask tensor output. Note: Uses bounding box-based segmentation rather than pixel-perfect segmentation due to InsightFace limitations.
 
   <img src="png/segment.png" width="400" alt="Facetools Human Segmentation IF">
@@ -155,7 +152,6 @@ This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**
 
 The following components are adapted from other repositories and may have different licenses:
 
-- **SAM3SegmentV3**: Adapted from [ComfyUI-RMBG](https://github.com/1038lab/ComfyUI-RMBG) (GPL-3.0). Uses SAM3 (Segment Anything Model 3) from [1038lab](https://huggingface.co/1038lab/sam3). The SAM3 model files are automatically downloaded from HuggingFace on first use.
 - **Facetools Human Segmentation (InsightFace)**: Adapted from [comfyui-easy-use](https://github.com/yolain/comfyui-easy-use) (GPL-3.0).
 - **Facetools Person Mask Ultra V2 (InsightFace)**: Adapted from [ComfyUI_LayerStyle_Advance](https://github.com/chflame163/ComfyUI_LayerStyle_Advance) (MIT).
 - **Facetools Facial Segment (InsightFace)**: Adapted from [ComfyUI_LayerStyle_Advance](https://github.com/chflame163/ComfyUI_LayerStyle_Advance) (MIT).

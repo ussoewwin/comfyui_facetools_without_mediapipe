@@ -28,15 +28,7 @@ except Exception as e:
     CONSTRAIN_IMAGE_NODE_DISPLAY_NAME_MAPPINGS = {}
 
 
-# SAM3 (local) - keep optional so the rest of the extension still loads even if SAM3 deps are missing.
-try:
-    from .AILab_SAM3Segment import (
-        NODE_CLASS_MAPPINGS as SAM3_NODE_CLASS_MAPPINGS,
-        NODE_DISPLAY_NAME_MAPPINGS as SAM3_NODE_DISPLAY_NAME_MAPPINGS,
-    )
-except Exception:
-    SAM3_NODE_CLASS_MAPPINGS = {}
-    SAM3_NODE_DISPLAY_NAME_MAPPINGS = {}
+# SAM3 removed: ComfyUI now supports SAM3 natively.
 
 try:
     from .src.comfyui_facetools_disabled_mediapipe.insightface_segmentation import (
@@ -100,9 +92,6 @@ NODE_CLASS_MAPPINGS.update(IMAGE_RESIZE_NODE_CLASS_MAPPINGS)
 # Add Constrain Image nodes
 NODE_CLASS_MAPPINGS.update(CONSTRAIN_IMAGE_NODE_CLASS_MAPPINGS)
 
-# Add SAM3 nodes (if available)
-NODE_CLASS_MAPPINGS.update(SAM3_NODE_CLASS_MAPPINGS)
-
 # Add InsightFace segmentation nodes
 NODE_CLASS_MAPPINGS.update(INSIGHTFACE_NODE_CLASS_MAPPINGS)
 
@@ -138,9 +127,6 @@ NODE_DISPLAY_NAME_MAPPINGS.update(IMAGE_RESIZE_NODE_DISPLAY_NAME_MAPPINGS)
 
 # Add Constrain Image node display names
 NODE_DISPLAY_NAME_MAPPINGS.update(CONSTRAIN_IMAGE_NODE_DISPLAY_NAME_MAPPINGS)
-
-# Add SAM3 node display names (if available)
-NODE_DISPLAY_NAME_MAPPINGS.update(SAM3_NODE_DISPLAY_NAME_MAPPINGS)
 
 # Add InsightFace segmentation node display names
 NODE_DISPLAY_NAME_MAPPINGS.update(INSIGHTFACE_NODE_DISPLAY_NAME_MAPPINGS)
